@@ -6,11 +6,11 @@ Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a
 
 ## Tecnologías y versiones
 
-- Java 21.
-- Minecraft 1.21.1, Fabric Loader y Fabric Loom.
-- Gradle 8.8 mediante el wrapper del repositorio (`./gradlew` en Linux/macOS; `gradlew.bat` en Windows).
+- Java 25.
+- Minecraft 26.2, Fabric Loader y Fabric Loom con Mojang mappings (Yarn ya no se mantiene para las versiones modernas).
+- Gradle 9.7.1 mediante el wrapper del repositorio (`./gradlew` en Linux/macOS; `gradlew.bat` en Windows).
 - Fabric API y MidnightLib; MidnightLib se incluye dentro del mod mediante Gradle.
-- Versiones y nombre del artefacto: `gradle.properties` (`mod_version`, `minecraft_version`, `archives_base_name` y dependencias).
+- Versiones y nombre del artefacto: `gradle.properties` (`mod_version`, `minecraft_version`, `loader_version`, `loom_version`, `archives_base_name` y dependencias).
 - Metadatos, entrypoint y compatibilidad: `src/main/resources/fabric.mod.json`.
 
 ## Estructura relevante
@@ -36,9 +36,9 @@ Al modificar el flujo de inventario, revisa cuidadosamente los índices de ranur
 
 ## Build, CI y releases
 
-- El workflow se ejecuta en `push` y `pull_request`, usa Java 21 y ejecuta `./gradlew build`.
+- El workflow se ejecuta en `push` y `pull_request`, usa Java 25 y ejecuta `./gradlew build`.
 - Un push de un tag que empiece por `v` activa además la generación de un GitHub Release. El workflow adjunta el JAR normal, no los artefactos `-dev` ni `-sources`, y genera las notas automáticamente.
-- Mantén `mod_version` en `gradle.properties` coherente con el tag de release (por ejemplo, `mod_version=1.0.2` y tag `v1.0.2`).
+- Mantén `mod_version` en `gradle.properties` coherente con el tag de release (por ejemplo, `mod_version=2.0.0` y tag `v2.0.0`).
 - La publicación automática en Modrinth fue retirada. No la restaures ni agregues tokens de publicación sin una solicitud explícita.
 - El permiso `contents: write` debe permanecer limitado al job de release. No imprimas el entorno ni secretos en los logs; usa los tokens solo en el paso que los necesita.
 

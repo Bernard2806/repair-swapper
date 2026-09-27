@@ -2,7 +2,7 @@
 
 Mod **exclusivo de cliente** para Fabric que cambia temporalmente a la mano correspondiente los objetos dañados con **Reparación (Mending)** cuando recoges experiencia.
 
-Este repositorio es un fork del proyecto original de [Tobi1Craft](https://github.com/tobi1craft/repair-swapper). El objetivo de este fork es mantener el código al día con las versiones recientes de Minecraft y corregir errores. La versión configurada actualmente es **Minecraft 1.21.1**.
+Este repositorio es un fork del proyecto original de [Tobi1Craft](https://github.com/tobi1craft/repair-swapper). El objetivo de este fork es mantener el código al día con las versiones recientes de Minecraft y corregir errores. La versión configurada actualmente es **Minecraft 26.2**.
 
 ## Características
 
@@ -14,14 +14,14 @@ Este repositorio es un fork del proyecto original de [Tobi1Craft](https://github
 
 ## Requisitos
 
-- Minecraft **1.21.1**.
+- Minecraft **26.2**.
 - Fabric Loader y Fabric API.
-- Java **21**.
+- Java **25**.
 - MidnightLib está incluida dentro del mod y no hace falta instalarla por separado.
 
 ## Instalación
 
-1. Instala Fabric Loader para Minecraft 1.21.1.
+1. Instala Fabric Loader para Minecraft 26.2.
 2. Instala Fabric API en la carpeta `mods`.
 3. Descarga el archivo JAR desde [Releases](https://github.com/Bernard2806/repair-swapper/releases) y colócalo en la misma carpeta.
 4. Inicia Minecraft con el perfil de Fabric.
