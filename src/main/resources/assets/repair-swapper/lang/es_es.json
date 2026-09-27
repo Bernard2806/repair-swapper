@@ -1,0 +1,13 @@
+{
+  "repair-swapper.midnightconfig.title": "Configuración de Repair Swapper",
+  "repair-swapper.midnightconfig.auto": "Activar Repair Swapper automáticamente",
+  "repair-swapper.midnightconfig.auto.tooltip": "Activarlo al recoger experiencia durante el tiempo indicado en la demora de reinicio",
+  "repair-swapper.midnightconfig.delayToReset": "Demora de reinicio (en ticks)",
+  "repair-swapper.midnightconfig.delayToReset.tooltip": "Tiempo tras el que se desactivará Repair Swapper.\nUsa 0 para desactivar el reinicio automático.",
+  "key.category.repair-swapper.main": "Repair Swapper",
+  "key.repair-swapper.toggle": "Activar o desactivar Repair Swapper",
+  "hud.repair-swapper.enabled": "Repair Swapper activado",
+  "hud.repair-swapper.disabled": "Repair Swapper desactivado",
+  "hud.repair-swapper.noRepairable": "Repair Swapper no se ha activado: ¡no hay objetos que reparar!",
+  "hud.repair-swapper.requiresSword": "Equipa una espada en la mano principal para activar Repair Swapper."
+}

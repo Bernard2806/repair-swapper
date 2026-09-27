@@ -7,8 +7,9 @@ Este repositorio es un fork del proyecto original de [Tobi1Craft](https://github
 ## Características
 
 - Se activa automáticamente al recoger orbes de experiencia o manualmente con la tecla **R**.
+- Solo se activa mientras tengas una espada en la mano principal; si la guardas, Repair Swapper se desactiva.
+- Cambia los objetos dañados con Reparación únicamente a la mano secundaria, dejando libre la espada.
 - Busca objetos dañados con Reparación en el inventario y prioriza el que tenga menos durabilidad restante.
-- Permite elegir la mano principal o la secundaria como destino.
 - Permite configurar cuánto tiempo permanece activo el cambio.
 - Funciona en el cliente; no requiere instalar el mod en el servidor.
 
@@ -28,10 +29,12 @@ Este repositorio es un fork del proyecto original de [Tobi1Craft](https://github
 
 ## Uso y configuración
 
-- Pulsa **R** para activar o desactivar Repair Swapper.
+- Pulsa **R** (tecla predeterminada) para activar o desactivar Repair Swapper. La tecla no lo alterna si hay una pantalla o el chat abiertos.
+- Puedes cambiar la tecla en **Opciones → Controles → Asignación de teclas → Repair Swapper**.
 - La activación automática al recoger experiencia está habilitada por defecto.
-- En la configuración puedes seleccionar la mano principal o secundaria y ajustar la demora antes de desactivar la función.
-- La demora predeterminada es de 60 ticks. Un valor de 0 desactiva el reinicio automático.
+- En la configuración puedes ajustar la activación automática y la demora antes de desactivar la función.
+- La demora predeterminada es de 60 ticks; el temporizador se pausa mientras estás agachado. Un valor de 0 desactiva el reinicio automático.
+- Los avisos aparecen en verde al activar y en rojo al desactivar Repair Swapper.
 
 ## Compatibilidad con servidores
 

@@ -12,8 +12,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -27,6 +29,10 @@ import java.util.List;
 
 public class RepairSwapperClient implements ClientModInitializer {
 
+    private static final int ENABLED_MESSAGE_COLOR = 0x55FF55;
+    private static final int DISABLED_MESSAGE_COLOR = 0xFF5555;
+    private static final int WARNING_MESSAGE_COLOR = 0xFFFF55;
+
     public static final Logger LOGGER = LoggerFactory.getLogger("repair-swapper");
 
     private static KeyMapping keyBinding;
@@ -39,7 +45,7 @@ public class RepairSwapperClient implements ClientModInitializer {
     public static void doSwapping() {
         Minecraft client = Minecraft.getInstance();
         LocalPlayer player = client.player;
-        if (!canUseInventory(client, player)) return;
+        if (!canUseInventory(client, player) || !hasSwordInMainHand(player)) return;
 
         int slot = getLeastDurabilitySlot(player);
 
@@ -48,33 +54,30 @@ public class RepairSwapperClient implements ClientModInitializer {
         if (swappedSlot != -1) swapBack(client, player);
 
         swappedSlot = slot;
-        swappedSlotTo = 45;
+        swappedSlotTo = InventoryMenu.SHIELD_SLOT;
+        int menuSlot = getMenuSlotForInventorySlot(swappedSlot);
 
-        if (swappedSlot < 9) {
-            player.getInventory().setSelectedSlot(swappedSlot);
-            swappedSlot = -1;
-            return;
-        }
-        if (RepairSwapperConfig.hand == RepairSwapperConfig.Hand.MAINHAND)
-            swappedSlotTo = player.getInventory().getSelectedSlot() + 36;
-
-        if (!player.getInventory().getItem(swappedSlotTo).isEmpty())
+        if (!player.getOffhandItem().isEmpty())
             client.gameMode.handleContainerInput(player.inventoryMenu.containerId, swappedSlotTo, 0, ContainerInput.PICKUP, player);
-        client.gameMode.handleContainerInput(player.inventoryMenu.containerId, swappedSlot, 0, ContainerInput.PICKUP, player);
+        client.gameMode.handleContainerInput(player.inventoryMenu.containerId, menuSlot, 0, ContainerInput.PICKUP, player);
         client.gameMode.handleContainerInput(player.inventoryMenu.containerId, swappedSlotTo, 0, ContainerInput.PICKUP, player);
     }
 
     private static void tick(Minecraft client) {
         while (keyBinding.consumeClick()) {
+            if (client.gui.screen() != null) continue;
             if (enabled) disable(client);
             else enable(client, false);
         }
+        if (enabled && client.player != null && !hasSwordInMainHand(client.player))
+            disable(client);
         if (!enabled) {
             if (swappedSlot != -1 && canUseInventory(client, client.player))
                 swapBack(client, client.player);
             return;
         }
-        if (RepairSwapperConfig.delayToReset != 0) {
+        if (RepairSwapperConfig.delayToReset != 0
+                && (client.player == null || !client.player.isCrouching())) {
             if (tickCounter >= RepairSwapperConfig.delayToReset) {
                 disable(client);
                 tickCounter = 0;
@@ -92,17 +95,22 @@ public class RepairSwapperClient implements ClientModInitializer {
             if (!canUseInventory(client, client.player)) return;
             swapBack(client, client.player);
         }
-        if (client.player != null && getRepairableSlots(client.player).isEmpty()) {
+        if (client.player == null || !hasSwordInMainHand(client.player)) {
             if (!autoTrigger)
-                client.gui.hud.setOverlayMessage(Component.translatable("hud.repair-swapper.noRepairable"), false);
+                showOverlayMessage(client, "hud.repair-swapper.requiresSword", WARNING_MESSAGE_COLOR);
+            return;
+        }
+        if (getRepairableSlots(client.player).isEmpty()) {
+            if (!autoTrigger)
+                showOverlayMessage(client, "hud.repair-swapper.noRepairable", WARNING_MESSAGE_COLOR);
             return;
         }
         enabled = true;
-        client.gui.hud.setOverlayMessage(Component.translatable("hud.repair-swapper.enabled"), false);
+        showOverlayMessage(client, "hud.repair-swapper.enabled", ENABLED_MESSAGE_COLOR);
     }
 
     public static void disable(Minecraft client) {
-        client.gui.hud.setOverlayMessage(Component.translatable("hud.repair-swapper.disabled"), false);
+        showOverlayMessage(client, "hud.repair-swapper.disabled", DISABLED_MESSAGE_COLOR);
         enabled = false;
         if (swappedSlot == -1 || !canUseInventory(client, client.player)) return;
         swapBack(client, client.player);
@@ -125,16 +133,29 @@ public class RepairSwapperClient implements ClientModInitializer {
     }
 
     private static void swapBack(Minecraft client, LocalPlayer player) {
+        int menuSlot = getMenuSlotForInventorySlot(swappedSlot);
         if (!player.getInventory().getItem(swappedSlot).isEmpty())
-            client.gameMode.handleContainerInput(player.inventoryMenu.containerId, swappedSlot, 0, ContainerInput.PICKUP, player);
+            client.gameMode.handleContainerInput(player.inventoryMenu.containerId, menuSlot, 0, ContainerInput.PICKUP, player);
         client.gameMode.handleContainerInput(player.inventoryMenu.containerId, swappedSlotTo, 0, ContainerInput.PICKUP, player);
-        client.gameMode.handleContainerInput(player.inventoryMenu.containerId, swappedSlot, 0, ContainerInput.PICKUP, player);
+        client.gameMode.handleContainerInput(player.inventoryMenu.containerId, menuSlot, 0, ContainerInput.PICKUP, player);
         swappedSlot = -1;
     }
 
     @Unique
     private static boolean needsSwap(LocalPlayer player, int slot) {
         return slot != -1 && slot <= 35 && player.getInventory().getSelectedSlot() != slot;
+    }
+
+    @Unique
+    private static boolean hasSwordInMainHand(LocalPlayer player) {
+        return player.getMainHandItem().is(ItemTags.SWORDS);
+    }
+
+    @Unique
+    private static int getMenuSlotForInventorySlot(int inventorySlot) {
+        return inventorySlot < Inventory.SELECTION_SIZE
+                ? InventoryMenu.USE_ROW_SLOT_START + inventorySlot
+                : inventorySlot;
     }
 
     @Unique
@@ -159,6 +180,11 @@ public class RepairSwapperClient implements ClientModInitializer {
                 && client.gui.screen() == null
                 && player.containerMenu == player.inventoryMenu
                 && player.containerMenu.getCarried().isEmpty();
+    }
+
+    @Unique
+    private static void showOverlayMessage(Minecraft client, String translationKey, int color) {
+        client.gui.hud.setOverlayMessage(Component.translatable(translationKey).withColor(color), false);
     }
 
     @Override
