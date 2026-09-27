@@ -2,7 +2,7 @@
 
 ## Propósito del repositorio
 
-Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a la mano principal o secundaria los objetos dañados con Reparación (Mending) para que reciban experiencia al recoger orbes. No es un mod de servidor ni implementa una API o servicio web.
+Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a la mano secundaria los objetos dañados con Reparación (Mending) para que reciban experiencia al recoger orbes, y solo funciona mientras el jugador sostiene una espada en la mano principal. No es un mod de servidor ni implementa una API o servicio web.
 
 ## Tecnologías y versiones
 
@@ -16,7 +16,7 @@ Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a
 ## Estructura relevante
 
 - `src/main/java/de/tobi1craft/repairswapper/RepairSwapperClient.java`: inicialización cliente, tecla **R**, ciclo de ticks, selección del objeto con menor durabilidad restante y cambios de ranura.
-- `RepairSwapperConfig.java`: configuración de activación automática, mano de destino y demora antes de desactivar (en ticks).
+- `RepairSwapperConfig.java`: configuración de activación automática y demora antes de desactivar (en ticks).
 - `src/main/java/de/tobi1craft/repairswapper/mixin/ExperienceOrbMixin.java`: detecta la colisión de un orbe de experiencia con el jugador cliente y puede activar el mod.
 - `src/main/resources/repair-swapper.mixins.json`: registro del mixin cliente.
 - `src/main/resources/assets/repair-swapper/lang/`: textos de interfaz y configuración.
@@ -27,10 +27,11 @@ Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a
 ## Comportamiento que debe conservarse
 
 1. El mod solo debe inicializarse y actuar en el cliente (`environment: client`). No añadas lógica de servidor sin un requerimiento explícito.
-2. La tecla R activa/desactiva la función. Al recoger experiencia, el mixin puede activarla si `auto` está habilitado.
+2. La tecla configurable activa/desactiva la función solo durante la partida; no debe alternarla si el chat u otra pantalla están abiertos. Al recoger experiencia, el mixin puede activarla si `auto` está habilitado.
 3. Se consideran los objetos dañados que tengan Reparación; se prioriza el que tenga menor durabilidad restante.
-4. El destino predeterminado es la mano secundaria. La configuración permite usar la mano principal y definir una demora de reinicio.
-5. Los cambios de inventario usan las API de Minecraft/Fabric. Ten en cuenta que el README advierte que algunos anticheats pueden marcar estas acciones al jugar en servidores.
+4. El intercambio solo usa la mano secundaria y requiere una espada en la mano principal. Si se retira la espada mientras está activo, se desactiva y restaura el objeto cuando sea seguro.
+5. La demora antes de desactivar se pausa mientras el jugador está agachado. Los avisos de activación y desactivación llevan colores distintos y sus textos deben estar localizados.
+6. Los cambios de inventario usan las API de Minecraft/Fabric. Ten en cuenta que el README advierte que algunos anticheats pueden marcar estas acciones al jugar en servidores.
 
 Al modificar el flujo de inventario, revisa cuidadosamente los índices de ranuras, el estado del cursor y las rutas de restauración/desactivación. Evita que un cambio deje objetos en una ranura inesperada o afecte inventarios distintos al del jugador.
 
@@ -38,7 +39,7 @@ Al modificar el flujo de inventario, revisa cuidadosamente los índices de ranur
 
 - El workflow se ejecuta en `push` y `pull_request`, usa Java 25 y ejecuta `./gradlew build`.
 - Un push de un tag que empiece por `v` activa además la generación de un GitHub Release. El workflow adjunta el JAR normal, no los artefactos `-dev` ni `-sources`, y genera las notas automáticamente.
-- Mantén `mod_version` en `gradle.properties` coherente con el tag de release (por ejemplo, `mod_version=2.0.0` y tag `v2.0.0`).
+- Incluye la versión de Minecraft como sufijo en `mod_version` y en el tag de release. Omite el prefijo `1.` en las versiones antiguas de Minecraft: por ejemplo, MC `1.21.6` usa `mod_version=2.0.0-21.6` y tag `v2.0.0-21.6`; MC `26.2` usa `mod_version=2.0.0-26.2` y tag `v2.0.0-26.2`.
 - La publicación automática en Modrinth fue retirada. No la restaures ni agregues tokens de publicación sin una solicitud explícita.
 - El permiso `contents: write` debe permanecer limitado al job de release. No imprimas el entorno ni secretos en los logs; usa los tokens solo en el paso que los necesita.
 
