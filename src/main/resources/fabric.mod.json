@@ -3,7 +3,7 @@
 	"id": "repair-swapper",
 	"version": "${version}",
 	"name": "Repair Swapper",
-	"description": "Client side mod which switches to repairable items when collecting XP",
+	"description": "Mod de cliente que cambia los objetos dañados con Reparación al recoger experiencia",
 	"authors": [
 		"@tobi1craft"
 	],
@@ -11,9 +11,9 @@
 		"@Suedfruchtchen"
 	],
 	"contact": {
-		"homepage": "https://tobi1craft.de/repair-swapper",
-		"sources": "https://github.com/tobi1craft/repair-swapper",
-		"issues": "https://github.com/tobi1craft/repair-swapper/issues"
+		"homepage": "https://github.com/Bernard2806/repair-swapper",
+		"sources": "https://github.com/Bernard2806/repair-swapper",
+		"issues": "https://github.com/Bernard2806/repair-swapper/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/repair-swapper/icon.png",

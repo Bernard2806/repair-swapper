@@ -22,7 +22,7 @@ Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a
 - `src/main/resources/assets/repair-swapper/lang/`: textos de interfaz y configuración.
 - `build.gradle`, `settings.gradle`, `gradle.properties` y `gradle/wrapper/`: configuración de Gradle, repositorios, plugins y versiones.
 - `.github/workflows/build.yml`: build de CI y creación de GitHub Releases.
-- `README.md` y `CHANGELOG.md`: documentación y notas de cambios.
+- `README.md`: descripción, instalación, uso, compatibilidad y créditos del fork.
 
 ## Comportamiento que debe conservarse
 
