@@ -2,7 +2,7 @@
 
 ## Propósito del repositorio
 
-Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a la mano secundaria los objetos dañados con Reparación (Mending) para que reciban experiencia al recoger orbes, y solo funciona mientras el jugador sostiene una espada en la mano principal. No es un mod de servidor ni implementa una API o servicio web.
+Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a la mano secundaria los objetos dañados con Reparación (Mending) para que reciban experiencia al recoger orbes, y solo funciona mientras el jugador sostiene en la mano principal el objeto requerido (una espada por defecto). No es un mod de servidor ni implementa una API o servicio web.
 
 ## Tecnologías y versiones
 
@@ -15,8 +15,9 @@ Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a
 
 ## Estructura relevante
 
-- `src/main/java/de/tobi1craft/repairswapper/RepairSwapperClient.java`: inicialización cliente, tecla **R**, ciclo de ticks, selección del objeto con menor durabilidad restante y cambios de ranura.
-- `RepairSwapperConfig.java`: configuración de activación automática y demora antes de desactivar (en ticks).
+- `src/main/java/de/tobi1craft/repairswapper/RepairSwapperClient.java`: inicialización cliente, tecla **R**, ciclo de ticks, detección de orbes cercanos, selección del objeto a reparar, cambios de ranura y restauración.
+- `RepairSwapperConfig.java`: activación automática, alcance de detección de orbes, demora antes de desactivar (en segundos), objeto requerido en la mano principal, prioridad, protección del tótem, HUD, sonidos y objetos excluidos.
+- `RepairSwapperHud.java`: porcentaje de durabilidad del objeto en reparación sobre la ranura de la mano secundaria.
 - `src/main/java/de/tobi1craft/repairswapper/mixin/ExperienceOrbMixin.java`: detecta la colisión de un orbe de experiencia con el jugador cliente y puede activar el mod.
 - `src/main/resources/repair-swapper.mixins.json`: registro del mixin cliente.
 - `src/main/resources/assets/repair-swapper/lang/`: textos de interfaz y configuración.
@@ -27,11 +28,12 @@ Repair Swapper es un mod **solo cliente** para Minecraft. Cambia temporalmente a
 ## Comportamiento que debe conservarse
 
 1. El mod solo debe inicializarse y actuar en el cliente (`environment: client`). No añadas lógica de servidor sin un requerimiento explícito.
-2. La tecla configurable activa/desactiva la función solo durante la partida; no debe alternarla si el chat u otra pantalla están abiertos. Al recoger experiencia, el mixin puede activarla si `auto` está habilitado.
-3. Se consideran los objetos dañados que tengan Reparación; se prioriza el que tenga menor durabilidad restante.
-4. El intercambio solo usa la mano secundaria y requiere una espada en la mano principal. Si se retira la espada mientras está activo, se desactiva y restaura el objeto cuando sea seguro.
-5. La demora antes de desactivar se pausa mientras el jugador está agachado. Los avisos de activación y desactivación llevan colores distintos y sus textos deben estar localizados.
-6. Los cambios de inventario usan las API de Minecraft/Fabric. Ten en cuenta que el README advierte que algunos anticheats pueden marcar estas acciones al jugar en servidores.
+2. La tecla configurable activa/desactiva la función solo durante la partida; no debe alternarla si el chat u otra pantalla están abiertos. Si `auto` está habilitado, se activa al acercarse orbes de experiencia (o al recogerlos, mediante el mixin); tras desactivarla con la tecla no se reactiva sola hasta que no queden orbes cerca.
+3. Se consideran los objetos dañados que tengan Reparación en el inventario principal (sin contar armadura, mano secundaria ni la ranura seleccionada) y que no estén excluidos; por defecto se prioriza el que tenga menor durabilidad restante. El objeto cambiado se mantiene hasta repararse por completo.
+4. El intercambio solo usa la mano secundaria y requiere en la mano principal el objeto configurado (espada por defecto). Si se retira mientras está activo, se desactiva y restaura el objeto cuando sea seguro. Nunca se quita un tótem de la mano secundaria si `protectTotem` está activo.
+5. Antes de restaurar se comprueba que la mano secundaria y la ranura original siguen como las dejó el mod; si no, se abandona el intercambio sin mover nada. El estado se reinicia al entrar o salir de un mundo y se restaura la mano secundaria al abrir el menú de pausa.
+6. La demora antes de desactivar se pausa mientras el jugador está agachado. Los avisos de activación y desactivación llevan colores distintos y sus textos deben estar localizados.
+7. Los cambios de inventario usan las API de Minecraft/Fabric (un solo clic `SWAP` con el botón 40 por intercambio). Ten en cuenta que el README advierte que algunos anticheats pueden marcar estas acciones al jugar en servidores.
 
 Al modificar el flujo de inventario, revisa cuidadosamente los índices de ranuras, el estado del cursor y las rutas de restauración/desactivación. Evita que un cambio deje objetos en una ranura inesperada o afecte inventarios distintos al del jugador.
 

@@ -3,12 +3,13 @@
 	"id": "repair-swapper",
 	"version": "${version}",
 	"name": "Repair Swapper",
-	"description": "Mod de cliente que cambia los objetos dañados con Reparación al recoger experiencia",
+	"description": "Client-side mod that swaps damaged Mending items into your offhand while you collect experience.",
 	"authors": [
 		"@tobi1craft"
 	],
 	"contributors": [
-		"@Suedfruchtchen"
+		"@Suedfruchtchen",
+		"@Bernard2806"
 	],
 	"contact": {
 		"homepage": "https://github.com/Bernard2806/repair-swapper",
@@ -31,5 +32,8 @@
 		"minecraft": "~26.2",
 		"java": ">=25",
 		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
 	}
 }
